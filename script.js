@@ -73,11 +73,16 @@ if (contactForm) {
         
         try {
             // Send form data to backend
-            const response = await fetch('backend/contact.php', {
+            // convert form to JSON payload
+            const payload = {};
+            formData.forEach((value, key) => payload[key] = value);
+
+            const response = await fetch('/api/contact', {
                 method: 'POST',
-                body: formData
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
             });
-            
+
             const result = await response.json();
             
             if (result.success) {
@@ -391,15 +396,42 @@ function typeRole() {
 }
 if (typedRole) typeRole(); 
 
-// Dark/Light Mode Toggle
+// Dark/Light Mode Toggle (Brighten mode)
 const themeToggle = document.getElementById('themeToggle');
+function applyTheme(isLight) {
+    if (isLight) {
+        document.body.classList.add('light-mode');
+    } else {
+        document.body.classList.remove('light-mode');
+    }
+    // Ensure themeToggle contains both icons (fa-moon and fa-sun). Leave icon display to CSS rules.
+    if (themeToggle) {
+        if (!themeToggle.querySelector('.fa-moon') || !themeToggle.querySelector('.fa-sun')) {
+            themeToggle.innerHTML = '<i class="fas fa-moon"></i><i class="fas fa-sun"></i>';
+        }
+    }
+}
+
+// Initialize theme from localStorage
+const savedTheme = localStorage.getItem('siteTheme');
+if (savedTheme === 'light') {
+    applyTheme(true);
+} else {
+    // default is dark; ensure class is not present
+    applyTheme(false);
+}
+
 if (themeToggle) {
     themeToggle.addEventListener('click', () => {
-        document.body.classList.toggle('light-mode');
+        const isLight = !document.body.classList.contains('light-mode');
+        applyTheme(isLight);
+        localStorage.setItem('siteTheme', isLight ? 'light' : 'dark');
     });
     themeToggle.addEventListener('keydown', (e) => {
         if (e.key === 'Enter' || e.key === ' ') {
-            document.body.classList.toggle('light-mode');
+            const isLight = !document.body.classList.contains('light-mode');
+            applyTheme(isLight);
+            localStorage.setItem('siteTheme', isLight ? 'light' : 'dark');
         }
     });
 }
@@ -450,3 +482,60 @@ const revealOnScroll = () => {
 };
 window.addEventListener('scroll', revealOnScroll);
 window.addEventListener('load', revealOnScroll); 
+
+/* Not-found (404) search handler */
+const notFoundForm = document.getElementById('notFoundSearch');
+if (notFoundForm) {
+    notFoundForm.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const q = (document.getElementById('notfoundQuery').value || '').trim().toLowerCase();
+        if (!q) {
+            showNotification('Please enter a search term', 'info');
+            return;
+        }
+
+        // Map common terms to anchors/pages
+        const mapping = {
+            'home': '#home',
+            'about': '#about',
+            'resume': '#resume',
+            'contact': '#contact',
+            'skills': '#skills',
+            'login': 'login.html',
+            'blog': '#blog'
+        };
+
+        // If exact mapping, navigate/scroll
+        if (mapping[q]) {
+            const target = mapping[q];
+            if (target.startsWith('#')) {
+                const el = document.querySelector(target);
+                if (el) {
+                    el.scrollIntoView({ behavior: 'smooth' });
+                    showNotification('Taking you to ' + q, 'success');
+                    return;
+                }
+            } else {
+                // navigate to page
+                window.location.href = target;
+                return;
+            }
+        }
+
+        // otherwise try to find a matching section id or link text
+        const anchors = Array.from(document.querySelectorAll('a[href^="#"]'));
+        const found = anchors.find(a => a.getAttribute('href').toLowerCase().includes(q) || (a.textContent || '').toLowerCase().includes(q));
+        if (found) {
+            const href = found.getAttribute('href');
+            const el = document.querySelector(href);
+            if (el) {
+                el.scrollIntoView({ behavior: 'smooth' });
+                showNotification('Found a match on the page', 'success');
+                return;
+            }
+        }
+
+        // not found
+        showNotification('No matching page found. Try Resume or Contact.', 'error');
+    });
+}

@@ -108,12 +108,16 @@ document.addEventListener('DOMContentLoaded', function() {
         loginBtn.disabled = true;
         
         try {
-            const formData = new FormData(loginForm);
-            
-            // Send login request to backend
-            const response = await fetch('backend/login.php', {
+            const payload = {
+                username: usernameInput.value.trim(),
+                password: passwordInput.value
+            };
+
+            // Send login request to backend (JSON)
+            const response = await fetch('/api/login', {
                 method: 'POST',
-                body: formData
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(payload)
             });
             
             const result = await response.json();
@@ -121,9 +125,12 @@ document.addEventListener('DOMContentLoaded', function() {
             if (result.success) {
                 showNotification('Login successful! Redirecting...', 'success');
                 
-                // Store user data if needed
+                // Store user data and token
                 if (result.user) {
                     localStorage.setItem('user', JSON.stringify(result.user));
+                }
+                if (result.token) {
+                    localStorage.setItem('token', result.token);
                 }
                 
                 // Redirect to dashboard or home page

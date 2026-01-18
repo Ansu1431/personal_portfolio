@@ -38,6 +38,7 @@
                 <li class="nav-item">
                     <a href="login.html" class="nav-link login-btn">Login</a>
                 </li>
+                
             </ul>
             <div class="hamburger">
                 <span class="bar"></span>
@@ -58,7 +59,7 @@
                     </p>
                     <div class="hero-buttons">
                         <a href="#contact" class="btn btn-secondary">Get In Touch</a>
-                        <a href="ansu_resume.pdf" class="btn btn-primary" download><i class="fas fa-download"></i> Download Resume</a>
+                        <a href="/uploads/resume.pdf" class="btn btn-primary" download><i class="fas fa-download"></i> Download Resume</a>
                     </div>
                 </div>
                 <div class="hero-image">
@@ -239,7 +240,7 @@
         <div class="container">
             <h2 class="section-title">Resume</h2>
             <div style="text-align:center; margin-bottom: 2rem;">
-                <a href="ansu_resume.pdf" class="btn btn-primary" download>
+                <a href="/uploads/resume.pdf" class="btn btn-primary" download>
                     <i class="fas fa-download"></i> Download Resume (PDF)
                 </a>
             </div>
@@ -252,7 +253,7 @@
                             <div class="timeline-content">
                                 <h4>B.Tech in Computer Science</h4>
                                 <p>Saint Andrews Institute Of Technology And Management</p>
-                                <p>CGPA: 7.5</p>
+                                <p>CGPA: 8.0</p>
                             </div>
                         </div>
                         <div class="timeline-item">
@@ -466,28 +467,12 @@
         </div>
     </section>
 
-    <footer class="footer">
-        <div class="container">
-            <div class="footer-content">
-                <div class="footer-links">
-                    <a href="#home">Home</a>
-                    <a href="#about">About</a>
-                    <a href="#skills">Skills</a>
-                    <a href="#resume">Resume</a>
-                    <a href="#contact">Contact</a>
-                </div>
-                <div class="footer-social">
-                    <a href="https://github.com/ansushekhar" class="social-link" target="_blank"><i class="fab fa-github"></i></a>
-                    <a href="https://linkedin.com/in/ansushekhar" class="social-link" target="_blank"><i class="fab fa-linkedin"></i></a>
-                </div>
-                <p>&copy; 2024 Ansu Shekhar. All rights reserved.</p>
-            </div>
-        </div>
-    </footer>
+    <!-- Bottom footer moved below the Blog/Articles section per request -->
 
     <!-- DARK/LIGHT MODE TOGGLE -->
     <div class="theme-toggle" id="themeToggle" title="Toggle dark/light mode" tabindex="0" aria-label="Toggle dark/light mode">
         <i class="fas fa-moon"></i>
+        <i class="fas fa-sun"></i>
     </div>
 
     <!-- PROJECT MODALS -->
@@ -501,9 +486,38 @@
     <!-- 404 PAGE -->
     <section id="not-found" class="not-found">
         <div class="container">
-            <h2 class="section-title">404 - Page Not Found</h2>
-            <p>Sorry, the page you are looking for does not exist.</p>
-            <a href="#home" class="btn btn-primary">Go Home</a>
+            <div class="notfound-inner">
+                <div class="notfound-illustration" aria-hidden="true">
+                    <!-- simple SVG illustration -->
+                    <svg width="220" height="140" viewBox="0 0 220 140" fill="none" xmlns="http://www.w3.org/2000/svg" role="img" aria-label="Page not found illustration">
+                        <rect x="0" y="0" width="220" height="140" rx="12" fill="var(--dark-card)" />
+                        <circle cx="60" cy="70" r="28" fill="var(--primary-color)" />
+                        <rect x="110" y="40" width="90" height="16" rx="8" fill="var(--primary-color)" />
+                        <rect x="110" y="70" width="60" height="12" rx="6" fill="var(--text-secondary)" />
+                    </svg>
+                </div>
+
+                <h2 class="section-title">404 — Page Not Found</h2>
+                <p class="notfound-desc">Sorry, the page you are looking for doesn't exist. Try searching the site or go back home.</p>
+
+                <form id="notFoundSearch" class="notfound-search" role="search">
+                    <input type="search" name="q" id="notfoundQuery" placeholder="Search (resume, contact, about, blog...)" aria-label="Search the site">
+                    <button type="submit" class="btn btn-secondary">Search</button>
+                </form>
+
+                <div class="notfound-actions">
+                    <a href="index.html#home" class="btn btn-primary">Go Home</a>
+                    <a href="index.html#resume" class="btn btn-secondary">View Resume</a>
+                    <a href="contact.html" class="btn btn-secondary">Contact</a>
+                </div>
+
+                <div class="notfound-suggestions">
+                    <strong>Suggested:</strong>
+                    <a href="index.html#about">About</a>
+                    <a href="index.html#skills">Skills</a>
+                    <a href="login.html">Login</a>
+                </div>
+            </div>
         </div>
     </section>
 
@@ -525,6 +539,21 @@
             </div>
         </div>
     </section>
+
+    <!-- FOOTER: centered social icons and copyright (placed at the very bottom after blog/articles) -->
+    <footer class="site-bottom" style="background:#0b0b0b; padding:40px 0; margin-top:40px;">
+        <div style="text-align:center;">
+            <div style="margin-bottom:18px;">
+                <a href="https://github.com/ansushekhar" target="_blank" style="display:inline-block; width:48px; height:48px; line-height:48px; border-radius:50%; background:#d4b33a; color:#111; text-align:center; margin:0 12px; text-decoration:none;">
+                    <i class="fab fa-github" style="font-size:20px;"></i>
+                </a>
+                <a href="https://linkedin.com/in/ansushekhar" target="_blank" style="display:inline-block; width:48px; height:48px; line-height:48px; border-radius:50%; background:#d4b33a; color:#111; text-align:center; margin:0 12px; text-decoration:none;">
+                    <i class="fab fa-linkedin" style="font-size:20px;"></i>
+                </a>
+            </div>
+            <p style="color:#cfc5a8; font-size:18px; margin:0;">&copy; 2024 Ansu Shekhar. All rights reserved.</p>
+        </div>
+    </footer>
 
     <script src="script.js"></script>
 </body>

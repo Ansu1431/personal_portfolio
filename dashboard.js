@@ -46,6 +46,8 @@ document.addEventListener('DOMContentLoaded', function() {
     document.getElementById('profileForm').addEventListener('submit', handleProfileUpdate);
     document.getElementById('passwordForm').addEventListener('submit', handlePasswordChange);
     document.getElementById('portfolioForm').addEventListener('submit', handlePortfolioSettings);
+    const resumeForm = document.getElementById('resumeForm');
+    if (resumeForm) resumeForm.addEventListener('submit', uploadResume);
 });
 
 // Load data for specific tabs
@@ -69,7 +71,10 @@ function loadTabData(tabName) {
 // Load overview data
 async function loadOverviewData() {
     try {
-        const response = await fetch('backend/dashboard.php?action=overview');
+    const token = localStorage.getItem('token');
+    const response = await fetch('/api/dashboard?action=overview', {
+        headers: token ? { 'Authorization': 'Bearer ' + token } : {}
+    });
         const data = await response.json();
         
         if (data.success) {
@@ -143,7 +148,10 @@ function formatTime(timestamp) {
 // Load messages
 async function loadMessages() {
     try {
-        const response = await fetch('backend/dashboard.php?action=messages');
+    const token = localStorage.getItem('token');
+    const response = await fetch('/api/dashboard?action=messages', {
+        headers: token ? { 'Authorization': 'Bearer ' + token } : {}
+    });
         const data = await response.json();
         
         if (data.success) {
@@ -192,7 +200,11 @@ function refreshMessages() {
 // Load profile data
 async function loadProfileData() {
     try {
-        const response = await fetch('backend/dashboard.php?action=profile');
+    const user = localStorage.getItem('user');
+    const userId = user ? JSON.parse(user).id : null;
+    let url = '/api/dashboard?action=profile';
+    if (userId) url += '&userId=' + encodeURIComponent(userId);
+    const response = await fetch(url);
         const data = await response.json();
         
         if (data.success) {
@@ -200,6 +212,11 @@ async function loadProfileData() {
             document.getElementById('profileName').value = profile.full_name || '';
             document.getElementById('profileEmail').value = profile.email || '';
             document.getElementById('profileUsername').value = profile.username || '';
+                // Resume link if present
+                if (profile.resume_path) {
+                    const rl = document.getElementById('resumeLink');
+                    rl.innerHTML = `<a href="${profile.resume_path}" target="_blank">View Resume</a>`;
+                }
         }
     } catch (error) {
         console.error('Error loading profile data:', error);
@@ -210,7 +227,7 @@ async function loadProfileData() {
 // Load portfolio settings
 async function loadPortfolioSettings() {
     try {
-        const response = await fetch('backend/dashboard.php?action=settings');
+    const response = await fetch('/api/dashboard?action=settings');
         const data = await response.json();
         
         if (data.success) {
@@ -236,7 +253,7 @@ async function handleProfileUpdate(e) {
     const formData = new FormData(e.target);
     
     try {
-        const response = await fetch('backend/dashboard.php?action=update_profile', {
+    const response = await fetch('/api/dashboard?action=update_profile', {
             method: 'POST',
             body: formData
         });
@@ -279,7 +296,7 @@ async function handlePasswordChange(e) {
     }
     
     try {
-        const response = await fetch('backend/dashboard.php?action=change_password', {
+    const response = await fetch('/api/dashboard?action=change_password', {
             method: 'POST',
             body: formData
         });
@@ -305,7 +322,7 @@ async function handlePortfolioSettings(e) {
     const formData = new FormData(e.target);
     
     try {
-        const response = await fetch('backend/dashboard.php?action=update_settings', {
+    const response = await fetch('/api/dashboard?action=update_settings', {
             method: 'POST',
             body: formData
         });
@@ -320,6 +337,43 @@ async function handlePortfolioSettings(e) {
     } catch (error) {
         console.error('Error updating portfolio settings:', error);
         showMessage('Failed to update portfolio settings', 'error');
+    }
+}
+
+// Upload resume PDF
+async function uploadResume(e) {
+    e.preventDefault();
+    const fileInput = document.getElementById('resumeInput');
+    if (!fileInput || !fileInput.files || fileInput.files.length === 0) {
+        showMessage('Please select a PDF to upload', 'error');
+        return;
+    }
+
+    const file = fileInput.files[0];
+    const formData = new FormData();
+    formData.append('resume', file);
+    // Attach user id so server can persist resume_path to user's row
+    const user = localStorage.getItem('user');
+    const userId = user ? JSON.parse(user).id : null;
+    if (userId) formData.append('userId', userId);
+
+    try {
+        const response = await fetch('/api/upload-resume', {
+            method: 'POST',
+            body: formData
+        });
+
+        const data = await response.json();
+        if (data.success) {
+            const rl = document.getElementById('resumeLink');
+            rl.innerHTML = `<a href="${data.path}" target="_blank">View Resume</a>`;
+            showMessage('Resume uploaded successfully', 'success');
+        } else {
+            showMessage(data.message || 'Upload failed', 'error');
+        }
+    } catch (err) {
+        console.error('Upload error', err);
+        showMessage('Upload failed', 'error');
     }
 }
 

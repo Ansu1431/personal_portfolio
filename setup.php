@@ -7,7 +7,7 @@
 // Database configuration
 $host = 'localhost';
 $username = 'root';
-$password = '';
+$password = 'Ansu.0114';
 $database = 'portfolio_db';
 
 echo "<h2>Portfolio Database Setup</h2>";

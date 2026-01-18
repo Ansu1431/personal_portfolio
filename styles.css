@@ -21,6 +21,23 @@
     --shadow-hover: 0 12px 40px rgba(255, 215, 0, 0.18);
 }
 
+/* Brighten / Light mode overrides - applied when body has class 'light-mode' */
+body.light-mode {
+    --primary-color: #1e90ff; /* bright blue */
+    --secondary-color: #ffb347; /* warm accent */
+    --dark-bg: #f5f7fb; /* page background becomes light */
+    --dark-surface: #ffffff;
+    --dark-card: #ffffff;
+    --text-primary: #111827; /* very dark text */
+    --text-secondary: #374151;
+    --text-muted: #6b7280;
+    --border-color: #e6e9ef;
+    --gradient-primary: linear-gradient(135deg, #1e90ff 0%, #60a5fa 100%);
+    --gradient-secondary: linear-gradient(135deg, #60a5fa 0%, #1e90ff 100%);
+    --shadow: 0 8px 24px rgba(17,24,39,0.06);
+    --shadow-hover: 0 12px 40px rgba(30,144,255,0.12);
+}
+
 body {
     font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif;
     background-color: var(--dark-bg);
@@ -436,6 +453,61 @@ section {
     max-width: 900px;
     margin: 0 auto;
 }
+
+/* Not Found (404) styling */
+.not-found {
+    padding: 80px 0;
+    background: linear-gradient(180deg, rgba(0,0,0,0.02) 0%, transparent 100%);
+}
+.notfound-inner {
+    text-align: center;
+    max-width: 860px;
+    margin: 0 auto;
+    padding: 40px;
+    border-radius: 12px;
+}
+.notfound-illustration {
+    margin: 0 auto 18px;
+    width: 220px;
+    height: 140px;
+}
+.notfound-inner .section-title {
+    font-size: 3rem;
+    color: var(--primary-color);
+    margin-bottom: 12px;
+}
+.notfound-desc {
+    color: var(--text-secondary);
+    margin-bottom: 20px;
+    font-size: 1.05rem;
+}
+.notfound-search {
+    display: flex;
+    justify-content: center;
+    gap: 10px;
+    margin: 18px 0 22px;
+}
+.notfound-search input[type="search"] {
+    width: 420px;
+    max-width: 70%;
+    padding: 12px 14px;
+    border-radius: 8px;
+    border: 1px solid var(--border-color);
+    background: var(--dark-surface);
+    color: var(--text-primary);
+}
+.notfound-search .btn-secondary { padding: 10px 16px; }
+.notfound-actions { display:flex; gap:12px; justify-content:center; margin-bottom:14px; }
+.notfound-suggestions { color: var(--text-muted); margin-top: 6px; }
+.notfound-suggestions a { margin-left: 10px; color: var(--primary-color); text-decoration: none; }
+
+@media (max-width: 720px) {
+    .notfound-search input[type="search"] { width: 100%; max-width: none; }
+    .notfound-inner { padding: 20px; }
+    .notfound-inner .section-title { font-size: 2.2rem; }
+}
+
+/* (footer reverted to original) */
 
 .resume-section {
     margin-bottom: 3rem;
