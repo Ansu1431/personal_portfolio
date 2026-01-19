@@ -7,7 +7,8 @@
 // Database configuration
 $host = 'localhost';
 $username = 'root';
-$password = 'Ansu.0114';
+// Never hardcode credentials in repo. Set DB_PASS in your environment (IIS/Apache) or edit locally.
+$password = getenv('DB_PASS') !== false ? getenv('DB_PASS') : '';
 $database = 'portfolio_db';
 
 echo "<h2>Portfolio Database Setup</h2>";

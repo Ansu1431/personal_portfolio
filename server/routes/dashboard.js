@@ -14,13 +14,14 @@ router.get('/dashboard', async (req, res) => {
       }
       // mirror the old PHP response shape expected by frontend
       const totalMessagesRow = await db.query('SELECT COUNT(*) as count FROM contact_messages');
-      const unreadRow = await db.query('SELECT COUNT(*) as count FROM contact_messages WHERE is_read = 0');
+      const unreadRow = await db.query('SELECT COUNT(*) as count FROM contact_messages WHERE is_read = 0 OR is_read IS NULL');
       const thisMonthRow = await db.query("SELECT COUNT(*) as count FROM contact_messages WHERE MONTH(created_at) = MONTH(CURRENT_DATE()) AND YEAR(created_at) = YEAR(CURRENT_DATE())");
       const recentActivityRows = await db.query("SELECT name, subject, created_at, 'message' as type FROM contact_messages ORDER BY created_at DESC LIMIT 10");
 
-      const totalMessages = totalMessagesRow[0] ? totalMessagesRow[0].count : 0;
-      const unreadMessages = unreadRow[0] ? unreadRow[0].count : 0;
-      const thisMonth = thisMonthRow[0] ? thisMonthRow[0].count : 0;
+      // Handle COUNT query results - MySQL2 returns array with objects
+      const totalMessages = totalMessagesRow && totalMessagesRow[0] ? (totalMessagesRow[0].count || 0) : 0;
+      const unreadMessages = unreadRow && unreadRow[0] ? (unreadRow[0].count || 0) : 0;
+      const thisMonth = thisMonthRow && thisMonthRow[0] ? (thisMonthRow[0].count || 0) : 0;
 
       const formattedActivity = (recentActivityRows || []).map(a => ({
         title: 'New message from ' + a.name,
@@ -40,11 +41,13 @@ router.get('/dashboard', async (req, res) => {
 
     if (action === 'messages') {
       const userFromToken = require('../middleware/authMiddleware').getUserFromReq(req);
+      console.log('Messages request - User from token:', userFromToken ? { id: userFromToken.id, is_admin: userFromToken.is_admin } : 'null');
       if (!userFromToken || !userFromToken.is_admin) {
         return res.status(403).json({ success: false, message: 'Admin access required' });
       }
       const msgs = await db.query('SELECT id, name, email, subject, message, created_at, is_read FROM contact_messages ORDER BY created_at DESC');
-      return res.json({ success: true, data: { messages: msgs } });
+      console.log('Messages query result:', msgs ? msgs.length + ' messages found' : 'null');
+      return res.json({ success: true, data: { messages: msgs || [] } });
     }
 
     if (action === 'profile') {

@@ -2,7 +2,8 @@
 // Database configuration
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
-define('DB_PASS', 'Ansu.0114');
+// Never hardcode credentials in repo. Set DB_PASS in your environment (or in server-side config).
+define('DB_PASS', getenv('DB_PASS') !== false ? getenv('DB_PASS') : '');
 define('DB_NAME', 'portfolio_db');
 
 // Create database connection
@@ -34,7 +35,7 @@ function initializeDatabase() {
 
     try {
         // Create users table
-        $pdo->exec("\n            CREATE TABLE IF NOT EXISTS users (\n                id INT AUTO_INCREMENT PRIMARY KEY,\n                username VARCHAR(50) UNIQUE NOT NULL,\n                email VARCHAR(100) UNIQUE NOT NULL,\n                password VARCHAR(255) NOT NULL,\n                full_name VARCHAR(100),\n                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP\n            )\n        ");
+        $pdo->exec("\n            CREATE TABLE IF NOT EXISTS users (\n                id INT AUTO_INCREMENT PRIMARY KEY,\n                username VARCHAR(50) UNIQUE NOT NULL,\n                email VARCHAR(100) UNIQUE NOT NULL,\n                password VARCHAR(255) NOT NULL,\n                full_name VARCHAR(100),\n                is_admin BOOLEAN DEFAULT FALSE,\n                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n                updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP\n            )\n        ");
 
         // Create contact_messages table
         $pdo->exec("\n            CREATE TABLE IF NOT EXISTS contact_messages (\n                id INT AUTO_INCREMENT PRIMARY KEY,\n                name VARCHAR(100) NOT NULL,\n                email VARCHAR(100) NOT NULL,\n                subject VARCHAR(200) NOT NULL,\n                message TEXT NOT NULL,\n                created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,\n                is_read BOOLEAN DEFAULT FALSE\n            )\n        ");
@@ -48,8 +49,8 @@ function initializeDatabase() {
         
         if ($stmt->fetchColumn() == 0) {
             $hashedPassword = password_hash('admin123', PASSWORD_DEFAULT);
-            $stmt = $pdo->prepare("\n                INSERT INTO users (username, email, password, full_name) \n                VALUES (?, ?, ?, ?)\n            ");
-            $stmt->execute(['admin', 'admin@portfolio.com', $hashedPassword, 'Portfolio Admin']);
+            $stmt = $pdo->prepare("\n                INSERT INTO users (username, email, password, full_name, is_admin) \n                VALUES (?, ?, ?, ?, ?)\n            ");
+            $stmt->execute(['admin', 'admin@portfolio.com', $hashedPassword, 'Portfolio Admin', 1]);
         }
 
         return true;

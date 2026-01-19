@@ -2,7 +2,8 @@
 // Database configuration
 define('DB_HOST', 'localhost');
 define('DB_USER', 'root');
-define('DB_PASS', 'Ansu.0114');
+// Never hardcode credentials in repo. Set DB_PASS in your environment (or in server-side config).
+define('DB_PASS', getenv('DB_PASS') !== false ? getenv('DB_PASS') : '');
 define('DB_NAME', 'portfolio_db');
 
 // Create database connection
@@ -41,6 +42,7 @@ function initializeDatabase() {
                 email VARCHAR(100) UNIQUE NOT NULL,
                 password VARCHAR(255) NOT NULL,
                 full_name VARCHAR(100),
+                is_admin BOOLEAN DEFAULT FALSE,
                 created_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP,
                 updated_at TIMESTAMP DEFAULT CURRENT_TIMESTAMP ON UPDATE CURRENT_TIMESTAMP
             )
@@ -79,10 +81,10 @@ function initializeDatabase() {
         if ($stmt->fetchColumn() == 0) {
             $hashedPassword = password_hash('admin123', PASSWORD_DEFAULT);
             $stmt = $pdo->prepare("
-                INSERT INTO users (username, email, password, full_name) 
-                VALUES (?, ?, ?, ?)
+                INSERT INTO users (username, email, password, full_name, is_admin) 
+                VALUES (?, ?, ?, ?, ?)
             ");
-            $stmt->execute(['admin', 'admin@portfolio.com', $hashedPassword, 'Portfolio Admin']);
+            $stmt->execute(['admin', 'admin@portfolio.com', $hashedPassword, 'Portfolio Admin', 1]);
         }
 
         return true;

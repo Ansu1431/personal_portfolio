@@ -38,6 +38,7 @@ document.addEventListener('DOMContentLoaded', function() {
     // Logout functionality
     document.getElementById('logoutBtn').addEventListener('click', function() {
         localStorage.removeItem('user');
+        localStorage.removeItem('token');
         localStorage.removeItem('rememberedUsername');
         window.location.href = 'login.html';
     });
@@ -86,6 +87,11 @@ async function loadOverviewData() {
             
             // Load recent activity
             loadRecentActivity(data.data.recentActivity || []);
+        } else {
+            console.error('Failed to load overview:', data.message);
+            if (response.status === 403) {
+                showMessage('Admin access required. Please log out and log back in if you were recently granted admin privileges.', 'error');
+            }
         }
     } catch (error) {
         console.error('Error loading overview data:', error);
@@ -156,6 +162,20 @@ async function loadMessages() {
         
         if (data.success) {
             displayMessages(data.data.messages || []);
+        } else {
+            console.error('Failed to load messages:', data.message);
+            const messagesList = document.getElementById('messagesList');
+            if (response.status === 403) {
+                messagesList.innerHTML = `
+                    <div class="empty-state">
+                        <i class="fas fa-lock"></i>
+                        <h4>Admin Access Required</h4>
+                        <p>${data.message || 'You need admin privileges to view messages. Please log out and log back in if you were recently granted admin access.'}</p>
+                    </div>
+                `;
+            } else {
+                showMessage(data.message || 'Failed to load messages', 'error');
+            }
         }
     } catch (error) {
         console.error('Error loading messages:', error);
